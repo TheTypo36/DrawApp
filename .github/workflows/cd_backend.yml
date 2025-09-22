@@ -21,4 +21,4 @@ jobs:
           context: .
           file: ./docker/dockerfile.backend
           push: true
-          tags: TheTypo36/DrawApp-backend:${{github.sha}}
+          tags: TheTypo36/drawapp-backend:${{github.sha}}
