@@ -21,4 +21,4 @@ jobs:
           context: .
           file: ./docker/dockerfile.backend
           push: true
-          tags: ${{secrets.DOCKERHUB_USERNAME}}/drawapp-backend:${{github.sha}}
+          tags: ashishraghuvanshi/drawapp-backend:${{github.sha}}
