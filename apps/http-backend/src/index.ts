@@ -1,5 +1,5 @@
 import express from "express";
-import jwt from "jsonwebtoken";
+import jwt, { verify } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { verifyJwt } from "./middleware/verifyJwt";
 import { JWT_SECRET } from "@repo/backend-common/config";
@@ -47,6 +47,22 @@ app.get("/login", async (req, res) => {
     data: token,
   });
 });
+app.get("/get-chat", verifyJwt, async (req: newReq, res) => {
+  const { roomId } = req.query;
+
+  if (!roomId) {
+    return res.json({ success: false, message: "roomid required" });
+  }
+
+  const allChats = await client.room.findFirst({
+    where: {
+      id: roomId as,
+    },
+    include: {
+      chats: true,
+    },
+  });
+});
 app.post("/register", async (req, res) => {
   const { email, password, name, photo } = req.body;
   const data = CreateUserSchema.safeParse(req.body);
@@ -78,7 +94,11 @@ app.post("/register", async (req, res) => {
     },
   });
 
-  return res.json({ success: "true", message: "user created", data: newUser });
+  return res.json({
+    success: "true",
+    message: "user registered",
+    data: newUser,
+  });
 });
 app.post("/room", verifyJwt, async (req: newReq, res) => {
   const { roomId } = req.body;
@@ -105,6 +125,7 @@ app.post("/room", verifyJwt, async (req: newReq, res) => {
   return res.json({
     success: "true",
     room: newRoom,
+    message: "room successfull created",
   });
 });
 const PORT = 8080;

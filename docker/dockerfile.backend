@@ -1,0 +1,27 @@
+# Use a more robust base image (Solution 2)
+FROM node:18-bookworm
+
+WORKDIR /app
+
+# Use Corepack (better than npm install -g pnpm)
+RUN corepack enable
+
+# Copy ONLY the files needed for installation
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* .npmrc* ./    
+
+COPY ./packages ./packages
+# (The * makes them optional if they don't exist)
+
+# Now install. This step will be cached as long
+# as your package files don't change.
+RUN pnpm install
+
+# NOW, copy the rest of your application code
+COPY . .
+
+# ... rest of your file ...
+RUN pnpm run db:generate
+
+
+EXPOSE 3000
+CMD ["pnpm","run","start:backend"]
